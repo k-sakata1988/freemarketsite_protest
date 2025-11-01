@@ -2,12 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\User; // ←これを追加！
-use Illuminate\Support\Facades\Hash; // ←これも必要！
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Redirect;
 use Laravel\Fortify\Fortify;
 use App\Http\Responses\RegisterResponse;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
@@ -28,7 +29,13 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::createUsersUsing(CreateNewUser::class);
         $this->app->singleton(
             RegisterResponseContract::class,
-            RegisterResponse::class
+            function () {
+                return new class implements RegisterResponseContract {
+                    public function toResponse($request){
+                        return Redirect::route('mypage.profile.edit');
+                    }
+                };
+            }
         );
 
         Fortify::registerView(function () {

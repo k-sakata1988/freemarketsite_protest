@@ -13,6 +13,26 @@ class UserController extends Controller
         $user = Auth::user();
         return view('mypage.index', compact('user'));
     }
+    public function getTabItems(Request $request, $tabType)
+    {
+        $user = Auth::user();
+        $items = collect(); 
+
+        if ($tabType === 'sold') {
+            $items = $user->items()->latest()->get(); 
+        } elseif ($tabType === 'bought') {
+            $items = $user->purchases()
+                          ->with('item')
+                          ->latest()
+                          ->get()
+                          ->map(function ($purchase) {
+                              return $purchase->item;
+                          })
+                          ->filter();
+        }
+
+        return view('mypage._item_list', ['items' => $items, 'tabType' => $tabType])->render();
+    }
 
     public function edit()
     {

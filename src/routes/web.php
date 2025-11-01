@@ -6,7 +6,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\AddressController;
-// use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogoutController;
 
 Route::get('/', [ItemController::class, 'index'])->name('items.index');
@@ -26,5 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/mypage', [UserController::class, 'index'])->name('mypage.index');
     Route::get('/mypage/profile/edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
     Route::put('/mypage/profile', [UserController::class, 'update'])->name('mypage.profile.update');
+    Route::get('/mypage/items/{tabType}', [UserController::class, 'getTabItems'])->name('mypage.items.tab');    
 });
 Route::post('/logout', LogoutController::class)->name('logout');
