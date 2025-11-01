@@ -8,46 +8,86 @@ use App\Models\Item;
 
 class ItemController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        if (Auth::check()) {
-            $items = Auth::user()->wishlistItems;
-            $activeTab = 'mylist';
-        } else {
-            $items = Item::recommended()->get();
-            $activeTab = 'recommended';
-        }
-
-        return view('index', compact('items', 'activeTab'));
+        $this->middleware('auth')->only(['create', 'store']);
     }
 
-    public function search(Request $request)
+    public function index(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $activeTab = $request->input('tab') ?? (auth()->check() ? 'mylist' : 'recommended');
+
+        if ($activeTab === 'mylist' && auth()->check()) {
+            $items = Auth::user()->favorites()
+                ->with('purchase')
+                ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
+                ->get();
+        } else {
+            $items = Item::recommended()
+                ->with('purchase')
+                ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
+                ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
+                ->get();
+        }
+
+        return view('index', compact('items', 'activeTab', 'keyword'));
+    }
+
+    public function fetchTabItems($type, Request $request)
     {
         $keyword = $request->input('keyword');
 
-        $query = Item::query();
-
-        if (!empty($keyword)) {
-            $query->where('name', 'LIKE', "%{$keyword}%")
-                  ->orWhere('description', 'LIKE', "%{$keyword}%");
+        if ($type === 'recommended' || !auth()->check()) {
+            $items = Item::recommended()
+                ->with('purchase')
+                ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
+                ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
+                ->get();
+        } elseif ($type === 'mylist' && auth()->check()) {
+            $items = Auth::user()->favorites()
+                ->with('purchase')  
+                ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
+                ->get();
+        } else {
+            $items = collect();
         }
 
-        $items = $query->get();
-
-        return view('items.index', compact('items', 'keyword'));
+        return view('items._items', compact('items'));
     }
 
-    public function fetchTabItems($type)
-{
-    if ($type === 'recommended' || !auth()->check()) {
-        $items = \App\Models\Item::recommended()->get();
-    } else if ($type === 'mylist' && auth()->check()) {
-        $items = auth()->user()->wishlistItems;
-    } else {
-        $items = collect(); 
+    public function show(Item $item)
+    {
+        $item->load(['comments.user']);
+
+        return view('items.show', compact('item'));
     }
 
-    return view('items._items', compact('items'));
-}
+    public function create()
+    {
+        return view('items.create');
+    }
 
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|integer|min:0',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $item = new Item();
+        $item->fill($validated);
+        $item->user_id = auth()->id();
+
+        if ($request->hasFile('image_path')) {
+            $path = $request->file('image_path')->store('images', 'public');
+            $item->image_path = $path;
+        }
+
+        $item->save();
+
+        return redirect()->route('items.index')->with('success', '商品を出品しました。');
+    }
 }

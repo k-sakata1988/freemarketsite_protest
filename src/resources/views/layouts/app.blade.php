@@ -7,6 +7,7 @@
     <title>FreeMarket</title>
     <link rel="stylesheet" href="{{ asset('css/sanitize.css') }}">
     <link rel="stylesheet" href="{{ asset('css/common.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     @yield('css')
 </head>
 <body>
@@ -22,8 +23,9 @@
                     <a class="header__logo" href="{{ url('/') }}">
                         <img src="{{ asset('images/logo.svg') }}" alt="Coachtech Logo">
                     </a>
-                    <form class="header__search-form" action="{{ route('items.search') }}" method="GET">
-                        <input type="text" name="keyword" class="header__search-input" placeholder="なにをお探しですか？">
+                    <form class="header__search-form" action="{{ route('items.index') }}" method="GET">
+                        <input type="text" name="keyword" class="header__search-input" placeholder="なにをお探しですか？" value="{{ request('keyword') }}">
+                        <input type="hidden" name="tab" value="{{ request('tab') ?? (auth()->check() ? 'mylist' : 'recommended') }}">
                     </form>
                     <nav>
                         <ul class="header-nav">

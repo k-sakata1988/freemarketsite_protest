@@ -37,7 +37,7 @@ class CreateNewUser implements CreatesNewUsers
             'email.unique'=>'このメールアドレスは既に登録されています。',
             'password.required'=>'パスワードは必須です。',
             'password.min'=>'パスワードは８文字以上で入力してください。',
-            'password.confirmed'=>'確認用パスワードが一致していません。'
+            'password.confirmed'=>'確認用パスワードが一致していません。',
         ])->validate();
 
         return User::create([

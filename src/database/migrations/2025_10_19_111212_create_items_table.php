@@ -17,13 +17,13 @@ class CreateItemsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->integer('price');
-            $table->string('image_path');
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->string('image_path')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->enum('status',['selling','sold'])->default('selling');
-            $table->enum('condition',['excellent','good','fair','poor']);
-            $table->string('brand');
+            $table->string('condition', 50);
+            $table->string('brand')->nullable();
             $table->timestamps();
         });
     }
