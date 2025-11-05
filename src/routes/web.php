@@ -24,7 +24,7 @@ Route::get('/purchase/address/{item}', [AddressController::class, 'update'])->mi
 Route::post('/purchase/{item}', [PurchaseController::class, 'store'])->middleware('auth')->name('purchase.store');
 Route::middleware('auth')->group(function () {
     Route::get('/mypage', [UserController::class, 'index'])->name('mypage.index');
-    Route::get('/mypage/profile/edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
+    Route::get('/mypage/profile_edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
     Route::put('/mypage/profile', [UserController::class, 'update'])->name('mypage.profile.update');
     Route::get('/mypage/items/{tabType}', [UserController::class, 'getTabItems'])->name('mypage.items.tab');    
 });

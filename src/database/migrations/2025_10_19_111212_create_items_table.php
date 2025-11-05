@@ -24,6 +24,7 @@ class CreateItemsTable extends Migration
             $table->enum('status',['selling','sold'])->default('selling');
             $table->string('condition', 50);
             $table->string('brand')->nullable();
+            $table->boolean('is_recommended')->default(false);
             $table->timestamps();
         });
     }

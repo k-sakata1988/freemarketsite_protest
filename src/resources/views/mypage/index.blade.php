@@ -24,7 +24,6 @@
         </a>
     </div>
 
-    {{-- タブ切り替え --}}
     <div class="mypage-tabs">
         <ul id="tab-menu">
             <li class="mypage-tab-item tab-item active" data-tab="sold">出品した商品</li>
@@ -32,7 +31,6 @@
         </ul>
     </div>
 
-    {{-- 出品タブ --}}
     <div id="tab-sold" class="tab-content active">
         <h3>出品した商品</h3>
         <div class="mypage-items-container">
@@ -49,14 +47,17 @@
         </div>
     </div>
 
-    {{-- 購入タブ --}}
     <div id="tab-bought" class="tab-content" style="display: none;">
         <h3>購入した商品</h3>
         <div class="mypage-items-container">
             @forelse ($boughtItems ?? [] as $item)
                 <div class="mypage-item-card">
                     <div class="mypage-item-image">
-                        <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
+                        @php
+                        $imagePath = $item->image_path;
+                        $isExternal = Str::startsWith($imagePath, ['http://', 'https://']);
+                        @endphp
+                        <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}" alt="{{ $item->name }}">
                     </div>
                     <p class="item-name">{{ $item->name }}</p>
                 </div>
@@ -69,7 +70,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const tabs = document.querySelectorAll('.tab-item');
+    const tabs = document.querySelectorAll('.mypage-tab-item');
     const contents = document.querySelectorAll('.tab-content');
 
     tabs.forEach(tab => {
@@ -77,11 +78,23 @@ document.addEventListener('DOMContentLoaded', function () {
             const tabType = tab.dataset.tab;
 
             tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-
             tab.classList.add('active');
-            document.getElementById(`tab-${tabType}`).classList.add('active');
+
+            contents.forEach(content => {
+                content.style.display = 'none';
+                content.classList.remove('active');
+            });
+
+            const activeContent = document.getElementById(`tab-${tabType}`);
+            activeContent.style.display = 'block';
+            activeContent.classList.add('active');
         });
+    });
+
+    contents.forEach(content => {
+        if (!content.classList.contains('active')) {
+            content.style.display = 'none';
+        }
     });
 });
 </script>

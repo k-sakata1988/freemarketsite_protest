@@ -6,7 +6,7 @@
 
 .tabs {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin-bottom: 30px;
     border-bottom: 2px solid #ddd;
 }
@@ -87,6 +87,41 @@
     font-size: 14px;
 }
 
+@media (min-width: 1540px) {
+    .items-container {
+        width: 90%;
+        max-width: 1500px;
+    }
+
+    .item-card {
+        width: 250px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .items-container {
+        width: 90%;
+        max-width: 1400px;
+    }
+
+    .item-card {
+        width: 250px;
+    }
+}
+
+
+@media (max-width: 850px) {
+    .items-container {
+        width: 95%;
+        gap: 20px;
+    }
+
+    .item-card {
+        width: calc(33.33% - 16.67px);
+        height: initial;
+    }
+}
+
 @media (max-width: 768px) {
     .items-container {
         justify-content: center;
@@ -94,6 +129,7 @@
 
     .item-card {
         width: 45%;
+        height: initial;
     }
 }
 
