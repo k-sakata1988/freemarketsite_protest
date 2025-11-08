@@ -16,7 +16,7 @@
                     <div class="profile-placeholder">画像なし</div>
                 @endif
             </div>
-            <h2 class="user-name">{{ $user->user_name ?? 'ユーザー名' }}</h2>
+            <h2 class="user-name">{{ $user->name ?? 'ユーザー名' }}</h2>
         </div>
 
         <a href="{{ route('mypage.profile.edit') }}" class="profile-edit-link">
@@ -35,14 +35,16 @@
         <h3>出品した商品</h3>
         <div class="mypage-items-container">
             @forelse ($soldItems ?? [] as $item)
+            <a href="{{ route('items.show', ['item' => $item->id]) }}" class="mypage-item-card-link">
                 <div class="mypage-item-card">
                     <div class="mypage-item-image">
                         <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
                     </div>
                     <p class="item-name">{{ $item->name }}</p>
                 </div>
+            </a>
             @empty
-                <p class="no-items">現在、出品中の商品はありません。</p>
+            <p class="no-items">現在、出品中の商品はありません。</p>
             @endforelse
         </div>
     </div>
@@ -51,6 +53,7 @@
         <h3>購入した商品</h3>
         <div class="mypage-items-container">
             @forelse ($boughtItems ?? [] as $item)
+            <a href="{{ route('items.show', ['item' => $item->id]) }}" class="mypage-item-card-link">
                 <div class="mypage-item-card">
                     <div class="mypage-item-image">
                         @php
@@ -61,8 +64,9 @@
                     </div>
                     <p class="item-name">{{ $item->name }}</p>
                 </div>
+            </a>
             @empty
-                <p class="no-items">購入した商品履歴はありません。</p>
+            <p class="no-items">購入した商品履歴はありません。</p>
             @endforelse
         </div>
     </div>

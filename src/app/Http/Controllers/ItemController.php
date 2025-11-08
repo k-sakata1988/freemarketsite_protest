@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Category;
+use App\Models\Condition;
 use App\Models\Item;
 
 class ItemController extends Controller
@@ -65,29 +67,42 @@ class ItemController extends Controller
 
     public function create()
     {
-        return view('items.create');
+        $categories = Category::all();
+        $conditions = Condition::all();
+
+        return view('items.create', compact('categories', 'conditions'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'condition_id' => 'required|exists:conditions,id',
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|integer|min:0',
-            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'brand_name' => 'nullable|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|integer|min:100',
         ]);
 
-        $item = new Item();
-        $item->fill($validated);
-        $item->user_id = auth()->id();
-
+        $path = null;
         if ($request->hasFile('image_path')) {
             $path = $request->file('image_path')->store('images', 'public');
-            $item->image_path = $path;
         }
 
-        $item->save();
+        $itemData = $request->only([
+            'category_id',
+            'condition_id',
+            'name',
+            'brand_name',
+            'description',
+            'price'
+        ]);
 
-        return redirect()->route('items.index')->with('success', '商品を出品しました。');
+        $item = Item::create(array_merge($itemData, [
+            'user_id' => auth()->id(),
+            'image_path' => $path,
+        ]));
+        return redirect()->route('items.show', $item)->with('success', '商品を出品しました。');
     }
 }
