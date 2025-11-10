@@ -15,7 +15,7 @@
             <div class="image-upload-area">
                 <input type="file" name="image_path" id="image-upload" accept="image/*" style="display: none;">
                 <label for="image-upload" class="image-upload-label">
-                    <button type="button" class="select-image-btn" id="image-select-btn">画像を選択する</button>
+                    <span type="button" class="select-image-btn" id="image-select-btn">画像を選択する</span>
                     <img id="image-preview" src="#" alt="商品画像プレビュー" style="display: none;">
                 </label>
             </div>
@@ -23,26 +23,27 @@
                 <p class="error-message">{{ $message }}</p>
             @enderror
         </section>
-        <hr class="section-divider">
 
         <section class="item-section">
             <h2 class="section-title">商品の詳細</h2>
+            <hr class="section-divider">
 
             <div class="form-group category-group">
                 <label class="input-label">カテゴリー</label>
                 <div class="category-tags">
                     @foreach ($categories as $category)
-                        @php
-                            $isChecked = (int)old('category_id') === $category->id;
-                        @endphp
-                        <label class="category-tag-label">
-                            <input type="radio" name="category_id" value="{{ $category->id }}" style="display: none;" {{ $isChecked ? 'checked' : '' }}>
-                            <span class="tag-content {{ $isChecked ? 'active' : '' }}">{{ $category->name }}</span>
-                        </label>
-                    @endforeach
+                    @php
+                    $selected = old('category_id', $selectedCategories ?? []);
+                    $isChecked = in_array($category->id, (array)$selected);
+                    @endphp
+                <label class="category-tag-label">
+                    <input type="checkbox" name="category_id[]" value="{{ $category->id }}" style="display: none;" {{ $isChecked ? 'checked' : '' }}>
+                    <span class="tag-content {{ $isChecked ? 'active' : '' }}">{{ $category->name }}</span>
+                </label>
+                @endforeach
                 </div>
                 @error('category_id')
-                    <p class="error-message">{{ $message }}</p>
+                <p class="error-message">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -62,6 +63,7 @@
 
         <section class="item-section">
             <h2 class="section-title">商品名と説明</h2>
+            <hr class="section-divider">
 
             <div class="form-group">
                 <label for="name" class="input-label">商品名</label>
@@ -129,21 +131,18 @@
             }
         });
 
-        document.querySelectorAll('.category-tag-label input[type="radio"]').forEach(radio => {
-            const tagContent = radio.closest('.category-tag-label').querySelector('.tag-content');
+        document.querySelectorAll('.category-tag-label').forEach(label => {
+            const input = label.querySelector('input[type="checkbox"]');
+            const tagContent = label.querySelector('.tag-content');
 
-            if (radio.checked) {
+            if (input.checked) {
                 tagContent.classList.add('active');
             }
 
-            radio.addEventListener('change', () => {
-                document.querySelectorAll('.tag-content').forEach(tag => {
-                    tag.classList.remove('active');
-                });
-
-                if (radio.checked) {
-                    tagContent.classList.add('active');
-                }
+            label.addEventListener('click', (e) => {
+                input.checked = !input.checked;
+                tagContent.classList.toggle('active', input.checked);
+                e.preventDefault();
             });
         });
     });

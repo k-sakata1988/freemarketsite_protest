@@ -23,11 +23,13 @@ class ItemController extends Controller
         if ($activeTab === 'mylist' && auth()->check()) {
             $items = Auth::user()->favorites()
                 ->with('purchase')
+                ->where('status', 'selling')
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();
         } else {
             $items = Item::recommended()
                 ->with('purchase')
+                ->where('status', 'selling')
                 ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();
@@ -43,12 +45,14 @@ class ItemController extends Controller
         if ($type === 'recommended' || !auth()->check()) {
             $items = Item::recommended()
                 ->with('purchase')
+                ->where('status', 'selling')
                 ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();
         } elseif ($type === 'mylist' && auth()->check()) {
             $items = Auth::user()->favorites()
-                ->with('purchase')  
+                ->with('purchase')
+                ->where('status', 'selling')
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();
         } else {
@@ -73,11 +77,11 @@ class ItemController extends Controller
         return view('items.create', compact('categories', 'conditions'));
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $validated = $request->validate([
             'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required|array',
+            'category_id.*' => 'exists:categories,id',
             'condition_id' => 'required|exists:conditions,id',
             'name' => 'required|string|max:255',
             'brand_name' => 'nullable|string|max:255',
@@ -90,19 +94,20 @@ class ItemController extends Controller
             $path = $request->file('image_path')->store('images', 'public');
         }
 
-        $itemData = $request->only([
-            'category_id',
-            'condition_id',
-            'name',
-            'brand_name',
-            'description',
-            'price'
+        $categoryString = implode(',', $request->category_id); 
+
+        $item = Item::create([
+            'user_id' => auth()->id(),
+            'category_id' => $categoryString,
+            'condition' => $request->condition_id,
+            'name' => $request->name,
+            'brand' => $request->brand_name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'image_path' => $path,
+            'is_recommended' => true,
         ]);
 
-        $item = Item::create(array_merge($itemData, [
-            'user_id' => auth()->id(),
-            'image_path' => $path,
-        ]));
         return redirect()->route('items.show', $item)->with('success', '商品を出品しました。');
     }
 }

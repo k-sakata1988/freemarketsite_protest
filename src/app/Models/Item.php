@@ -26,8 +26,8 @@ class Item extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function category(){
-        return $this->belongsTo(Category::class);
+    public function categories(){
+        return $this->belongsToMany(Category::class);
     }
 
     public function comments(){
@@ -47,6 +47,13 @@ class Item extends Model
     }
     public function isSoldOut(): bool
     {
-        return $this->purchase()->exists(); 
+        return $this->purchase()->exists();
+    }
+    public function getCategoryIdsAttribute(){
+        return $this->category_id ? explode(',', $this->category_id) : [];
+    }
+
+    public function getCategoriesAttribute(){
+        return Category::whereIn('id', $this->category_ids)->get();
     }
 }

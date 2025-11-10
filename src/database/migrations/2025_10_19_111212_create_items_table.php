@@ -20,7 +20,7 @@ class CreateItemsTable extends Migration
             $table->text('description')->nullable();
             $table->integer('price');
             $table->string('image_path')->nullable();
-            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('category_id')->nullable();
             $table->enum('status',['selling','sold'])->default('selling');
             $table->string('condition', 50);
             $table->string('brand')->nullable();

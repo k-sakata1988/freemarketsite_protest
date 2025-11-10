@@ -48,7 +48,23 @@
 
         <div class="item-detail__info-section">
             <h3>商品の情報</h3>
-            <p><strong>カテゴリー：</strong> {{ $item->category->name ?? '未設定' }}</p>
+            <p><strong>カテゴリー：</strong>
+            @php
+            $categoryNames = [];
+            if (!empty($item->category_id)) {
+                $categoryIds = explode(',', $item->category_id);
+                $categoryNames = \App\Models\Category::whereIn('id', $categoryIds)->pluck('name')->toArray();
+            }
+            @endphp
+
+            @if (!empty($categoryNames))
+            @foreach ($categoryNames as $name)
+            <span class="category-tag">{{ $name }}</span>
+            @endforeach
+            @else
+            未設定
+            @endif
+            </p>
             <p><strong>商品の状態：</strong> {{ $item->condition ?? '未設定' }}</p>
         </div>
 
@@ -57,7 +73,7 @@
                 コメント（<span id="display-comment-count">{{ $item->comments->count() }}</span>）
                 <i class="fas fa-chevron-down" id="toggle-icon"></i>
             </h3>
-            
+
             <div id="comments-content" class="accordion-content is-closed">
                 @foreach($item->comments as $comment)
                     <div class="comment">
