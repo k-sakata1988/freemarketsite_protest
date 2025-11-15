@@ -1,8 +1,8 @@
 .sell-main {
-    max-width: 1200px;
+    max-width: 1540px;
     margin: 50px auto;
     padding: 0 20px;
-    width: 50%;
+    width: 60%;
     background-color: #ffffff;
 }
 
@@ -71,20 +71,20 @@
 }
 
 .select-image-btn {
-    background-color: #ff0000;
-    color: white;
-    border: none;
+    background-color: #fff;
+    color: #ff0000;
+    border: solid 1px #ff0000;
     padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s;
     z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .select-image-btn:hover {
     background-color: #cc0000;
+    color: #fff;
 }
 
 #image-preview {
@@ -115,10 +115,10 @@
 .tag-content {
     display: inline-block;
     padding: 8px 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #ff0000;
     border-radius: 20px;
     font-size: 14px;
-    color: #555;
+    color: #ff0000;
     background-color: #fff;
     transition: all 0.2s;
     cursor: pointer;
@@ -165,6 +165,7 @@
     margin-right: 15px;
     font-weight: bold;
 }
+
 .price-input-wrapper {
     position: relative;
     width: 100%;
@@ -184,7 +185,6 @@
 .price-input {
     width: 100%;
     padding-left: 35px;
-    /* ← ¥マーク分の余白 */
     height: 45px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -229,5 +229,65 @@
     .sell-main {
         margin: 20px auto;
         padding: 0 10px;
+        width: 100%;
+    }
+}
+
+
+@media (min-width: 768px) and (max-width: 850px) {
+    .sell-main {
+        width: 80%;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .page-title {
+        font-size: 26px;
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        font-size: 18px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .submit-btn {
+        padding: 14px;
+        font-size: 17px;
+    }
+}
+
+@media (min-width: 1400px) and (max-width: 1540px) {
+    .sell-main {
+        width: 50%;
+        margin: 60px auto;
+    }
+
+    .page-title {
+        font-size: 32px;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 22px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 14px;
+        font-size: 17px;
+    }
+
+    .submit-btn {
+        padding: 18px;
+        font-size: 20px;
+        margin-top: 50px;
     }
 }
