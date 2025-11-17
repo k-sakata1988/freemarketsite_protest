@@ -91,7 +91,7 @@
                 <h4>商品へのコメント</h4>
                 <form id="comment-form">
                     @csrf
-                    <textarea name="comment" placeholder="コメントを入力してください" required></textarea>
+                    <textarea name="comment" placeholder="コメントを入力してください"></textarea>
                     <button type="submit" class="btn-comment">コメントを送信する</button>
                 </form>
             </div>
@@ -154,13 +154,17 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(async res => {
             if (!res.ok) {
                 const errorData = await res.json();
+                
                 const errorMsg = errorData.errors?.comment?.[0] ?? 'コメントの送信に失敗しました。';
+                
                 alert(errorMsg);
-                return;
+                
+                return Promise.reject(errorData); 
             }
             return res.json();
         })
         .then(data => {
+
             if (!data) return;
 
             const commentBody = document.createElement('div');
@@ -194,8 +198,10 @@ document.addEventListener('DOMContentLoaded', function() {
             commentForm.reset();
         })
         .catch(err => {
-            console.error(err);
-            alert('コメント送信に失敗しました。もう一度試してください。');
+            if (err.message && err.message !== '[object Object]') {
+                console.error("ネットワークエラー:", err);
+                console.log("バリデーションエラーを検知しました。", err);
+            }
         });
     });
 
