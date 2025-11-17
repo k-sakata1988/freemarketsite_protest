@@ -8,6 +8,8 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogoutController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 Route::get('/', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/tab/{type}', [ItemController::class, 'fetchTabItems'])->name('items.tab');
@@ -29,6 +31,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/mypage', [UserController::class, 'index'])->name('mypage.index');
     Route::get('/mypage/profile_edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
     Route::put('/mypage/profile', [UserController::class, 'update'])->name('mypage.profile.update');
-    Route::get('/mypage/items/{tabType}', [UserController::class, 'getTabItems'])->name('mypage.items.tab');    
+    Route::get('/mypage/items/{tabType}', [UserController::class, 'getTabItems'])->name('mypage.items.tab');
 });
 Route::post('/logout', LogoutController::class)->name('logout');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile/setup', [UserController::class, 'setupProfile'])->name('profile.setup');
+});
+
+Route::get('/email/verify', function () {
+    return view('verification.notice');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect(route('profile.setup'));
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');

@@ -24,6 +24,7 @@ class UserController extends Controller
 
         return view('mypage.index', compact('user', 'soldItems', 'boughtItems'));
     }
+    
     public function getTabItems(Request $request, $tabType)
     {
         $user = Auth::user();
@@ -46,6 +47,13 @@ class UserController extends Controller
         return view('mypage.profile_edit', compact('user'));
     }
 
+    public function setupProfile()
+    {
+        $user = Auth::user();
+        $user->load('address');
+        return view('mypage.profile_edit', compact('user'));
+    }
+    
     public function update(Request $request)
     {
         $request->validate([
