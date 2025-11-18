@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Http\Requests\AddressRequest;
 use App\Models\Item;
 use App\Models\Address;
 use Illuminate\Support\Facades\Auth;
@@ -28,15 +29,8 @@ class AddressController extends Controller
     }
 
 
-    public function saveAddress(Request $request)
+    public function saveAddress(AddressRequest $request)
     {
-        $request->validate([
-            'postal_code' => ['required', 'string', 'max:10'],
-            'address' => ['required', 'string', 'max:255'],
-            'building_name' => ['nullable', 'string', 'max:255'],
-            'item_id' => ['required', 'exists:items,id'],
-        ]); 
-
         $user = Auth::user();
         $itemId = $request->input('item_id');
 

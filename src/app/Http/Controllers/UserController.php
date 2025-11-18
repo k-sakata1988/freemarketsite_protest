@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Address;
 
@@ -54,16 +54,8 @@ class UserController extends Controller
         return view('mypage.profile_edit', compact('user'));
     }
     
-    public function update(Request $request)
+    public function update(ProfileRequest $request)
     {
-        $request->validate([
-            'user_name' => 'required|string|max:20',
-            'postal_code' => 'required|regex:/^\d{3}-\d{4}$/',
-            'address' => 'required|string|max:255',
-            'building_name' => 'nullable|string|max:255',
-            'profile_image' => 'nullable|image|max:2048',
-        ]);
-
         $user = Auth::user();
 
         $userData = [

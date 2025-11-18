@@ -8,7 +8,7 @@
 <div class="sell-main">
     <h1 class="page-title">商品の出品</h1>
 
-    <form method="POST" action="{{ route('items.store') }}" enctype="multipart/form-data" class="sell-form">
+    <form method="POST" action="{{ route('items.store') }}" enctype="multipart/form-data" class="sell-form" novalidate>
         @csrf
         <section class="item-section">
             <h2 class="section-title">商品画像</h2>

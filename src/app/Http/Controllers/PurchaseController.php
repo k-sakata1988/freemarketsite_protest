@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
 use App\Models\Address;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Http\Requests\PurchaseRequest;
 use Laravel\Cashier\Cashier;
 use App\Models\Purchase;
 use Stripe\PaymentIntent;
@@ -47,17 +48,11 @@ class PurchaseController extends Controller
      * @param \App\Models\Item $item
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request, Item $item)
+    public function store(PurchaseRequest $request, Item $item)
     {
         $user = Auth::user();
 
         $paymentMethodType = $request->input('payment_method_type');
-
-        $rules = ['payment_method_type' => 'required|string|in:credit,convenience'];
-        if ($paymentMethodType === 'credit') {
-            $rules['payment_method_id'] = 'required|string';
-        }
-        $request->validate($rules);
 
         $address = Address::where('user_id', $user->id)->first();
         if (!$address) {
@@ -119,7 +114,7 @@ class PurchaseController extends Controller
                 'confirm' => true,
                 'return_url' => route('purchase.return', $item->id),
             ]);
-
+            // $status = 'pending';一旦purchaseで問題なければpendingでも試行する//
             $status = 'purchased';
             $stripeId = $intent->id;
 

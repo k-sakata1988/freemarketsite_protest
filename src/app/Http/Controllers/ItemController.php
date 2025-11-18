@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\Condition;
 use App\Models\Item;
+use App\Http\Requests\ExhibitionRequest; 
 
 class ItemController extends Controller
 {
@@ -77,33 +78,24 @@ class ItemController extends Controller
         return view('items.create', compact('categories', 'conditions'));
     }
 
-    public function store(Request $request){
-        $validated = $request->validate([
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|array',
-            'category_id.*' => 'exists:categories,id',
-            'condition_id' => 'required|exists:conditions,id',
-            'name' => 'required|string|max:255',
-            'brand_name' => 'nullable|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|integer|min:100',
-        ]);
+    public function store(ExhibitionRequest $request)
+    {
+        $validated = $request->validated();
 
         $path = null;
         if ($request->hasFile('image_path')) {
             $path = $request->file('image_path')->store('images', 'public');
         }
-
-        $categoryString = implode(',', $request->category_id); 
+        $categoryString = implode(',', $validated['category_id']); 
 
         $item = Item::create([
             'user_id' => auth()->id(),
             'category_id' => $categoryString,
-            'condition' => $request->condition_id,
-            'name' => $request->name,
-            'brand' => $request->brand_name,
-            'description' => $request->description,
-            'price' => $request->price,
+            'condition' => $validated['condition_id'],
+            'name' => $validated['name'],
+            'brand' => $validated['brand_name'] ?? null,
+            'description' => $validated['description'],
+            'price' => $validated['price'],
             'image_path' => $path,
             'is_recommended' => true,
         ]);

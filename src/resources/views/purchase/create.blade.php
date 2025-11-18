@@ -26,9 +26,13 @@
                 <div class="payment-section">
                     <h3>支払い方法</h3>
                     <select name="payment_method_type" id="payment_method_type">
-                        <option value="credit">クレジットカード</option>
-                        <option value="convenience">コンビニ払い</option>
+                        <option value="" disabled {{ old('payment_method_type') == '' ? 'selected' : '' }}>支払い方法を選択してください</option>
+                        <option value="credit" {{ old('payment_method_type') == 'credit' ? 'selected' : '' }}>クレジットカード</option>
+                        <option value="convenience" {{ old('payment_method_type') == 'convenience' ? 'selected' : '' }}>コンビニ払い</option>
                     </select>
+                    @error('payment_method_type')
+                    <div class="validation-error">{{ $message }}</div>
+                    @enderror
 
                     <div id="credit-card-details" class="mt-3">
                         <h4 class="mb-2">カード情報</h4>
@@ -36,7 +40,7 @@
                         <div id="card-element"></div>
 
                         <div id="card-errors" role="alert" class="text-danger mt-2"></div>
-
+                        
                         <input type="hidden" name="payment_method_id" id="payment_method_id">
                     </div>
 
