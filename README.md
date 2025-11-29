@@ -31,3 +31,4 @@ Laravel環境構築
 ## URL
 - 開発環境: http://localhost/
 - phpMyAdmin: http://localhost:8080/
+- mailhog:http://127.0.0.1:8025/#
