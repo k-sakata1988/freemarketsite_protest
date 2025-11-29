@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
 use App\Models\Address;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use App\Http\Requests\PurchaseRequest;
 use Laravel\Cashier\Cashier;
 use App\Models\Purchase;
