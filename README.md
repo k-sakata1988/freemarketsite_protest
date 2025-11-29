@@ -10,11 +10,12 @@ Laravel環境構築
 1. docker-compose exec php bash
 2. composer install
 3. composer require laravel/cashier
-4. .env.exampleファイルから.envを作成し、環境変数を変更(mysql,laravel_db,laravel_user,laravel_passに設定),.env.testingにstripe_key,stripe_secretを設定する
+4. .env.exampleファイルから.envを作成し、環境変数を変更(mysql,laravel_db,laravel_user,laravel_passに設定)
 5. php artisan key:generate
-6. php artisan migrate
-7. php artisan db:seed
-8. php artisan storage:link
+6. .envにstripe_key,stripe_secretを設定し.envから.env.testingを作成しAPP_ENV=の項目にtesting(テスト用)を設定する
+7. php artisan migrate
+8. php artisan db:seed
+9. php artisan storage:link
 
 
 ## 使用技術
