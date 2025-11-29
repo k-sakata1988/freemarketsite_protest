@@ -14,7 +14,7 @@ Laravel環境構築
 5. php artisan key:generate
 6. php artisan migrate
 7. php artisan db:seed
-8. docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+8. php artisan storage:link
 
 
 ## 使用技術

@@ -15,6 +15,23 @@ use Mockery;
 class PaymentMethodTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        \Stripe\Stripe::setApiKey('sk_test_mock');
+
+        $mock = Mockery::mock('overload:' . \Stripe\PaymentIntent::class);
+        $mock->shouldReceive('create')->andReturn((object)[
+            'id' => 'pi_mock',
+            'client_secret' => 'cs_test_mock',
+            'next_action' => (object)[
+                'konbini_display_details' => (object)['hosted_voucher_url' => 'https://example.com/voucher']
+            ]
+        ]);
+    }
+
     /** @test */
     public function 小計画面で変更が反映される()
     {
@@ -38,5 +55,11 @@ class PaymentMethodTest extends TestCase
 
         $response->assertRedirect(route('items.index'));
         $response->assertSessionHas('success', '商品を購入しました！（テスト動作）');
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

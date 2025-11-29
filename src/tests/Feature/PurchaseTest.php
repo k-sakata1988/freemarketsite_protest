@@ -14,6 +14,22 @@ use Mockery;
 class PurchaseTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        \Stripe\Stripe::setApiKey('sk_test_mock');
+
+        $mock = Mockery::mock('overload:' . \Stripe\PaymentIntent::class);
+        $mock->shouldReceive('create')->andReturn((object)[
+            'id' => 'pi_mock',
+            'client_secret' => 'cs_test_mock',
+            'next_action' => (object)[
+                'konbini_display_details' => (object)['hosted_voucher_url' => 'https://example.com/voucher']
+            ]
+        ]);
+    }
     /** @test */
     public function 購入ボタンを押すと購入が完了する()
     {
@@ -34,5 +50,11 @@ class PurchaseTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('purchases', ['item_id' => $item->id]);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }
