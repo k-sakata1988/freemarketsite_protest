@@ -9,11 +9,13 @@ Dockerビルド
 Laravel環境構築
 1. docker-compose exec php bash
 2. composer install
-3. .env.exampleファイルから.envを作成し、環境変数を変更(mysql,laravel_db,laravel_user,laravel_passに設定)
-4. php artisan key:generate
-5. php artisan migrate
-6. php artisan db:seed
-7. docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+3. composer require laravel/cashier
+4. .env.exampleファイルから.envを作成し、環境変数を変更(mysql,laravel_db,laravel_user,laravel_passに設定),.env.testingにstripe_key,stripe_secretを設定する
+5. php artisan key:generate
+6. php artisan migrate
+7. php artisan db:seed
+8. docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+
 
 ## 使用技術
 - PHP 8.1.33
