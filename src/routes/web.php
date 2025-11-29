@@ -27,7 +27,7 @@ Route::get('/purchase/address/{item}', [AddressController::class, 'update'])->mi
 Route::post('/purchase/{item}', [PurchaseController::class, 'store'])->middleware('auth')->name('purchase.store');
 Route::get('purchase/{item}/konbini/return', [PurchaseController::class, 'konbiniReturn'])->name('purchase.return');
 Route::middleware('auth')->post('/items/{item}/favorite', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
-Route::middleware('auth')->group(function () {
+Route::middleware('auth','verified')->group(function () {
     Route::get('/mypage', [UserController::class, 'index'])->name('mypage.index');
     Route::get('/mypage/profile_edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
     Route::put('/mypage/profile', [UserController::class, 'update'])->name('mypage.profile.update');
@@ -52,3 +52,7 @@ Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('status', 'verification-link-sent');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+//test用
+Route::get('/items/recommended', [ItemController::class, 'recommended']);
+Route::get('/items/recommended/search', [ItemController::class, 'recommendedSearch']);

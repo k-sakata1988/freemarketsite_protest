@@ -102,4 +102,25 @@ class ItemController extends Controller
 
         return redirect()->route('items.show', $item)->with('success', '商品を出品しました。');
     }
+    // test用
+    public function recommended()
+    {
+        $items = Item::with('purchase')->where('status', 'selling')->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))->get();
+
+        // return view('items.recommended', compact('items'));
+        return view('index', ['items' => $items, 'activeTab' => 'recommended']);
+    }
+    public function recommendedSearch(Request $request)
+    {
+        $keyword = $request->input('keyword');
+
+        $items = Item::with('purchase')
+        ->where('status', 'selling')
+        ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
+        ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
+        ->get();
+
+        // return view('items.recommended', compact('items'));
+        return view('index', ['items' => $items, 'activeTab' => 'recommended']);
+    }
 }

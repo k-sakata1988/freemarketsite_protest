@@ -19,8 +19,8 @@ class CreatePurchasesTable extends Migration
             $table->foreignId('item_id')->unique()->constrained()->cascadeOnDelete();
             $table->foreignId('address_id')->constrained()->cascadeOnDelete();
             $table->enum('payment_method',['convenience_store','credit_card']);
-            $table->enum('status',['purchased']);
-            $table->timestamps();
+            $table->enum('status',['purchased','pending']);
+            $table->timestamps();   
         });
     }
 

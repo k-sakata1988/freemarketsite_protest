@@ -1,5 +1,5 @@
 <?php
-
+// 1_会員登録機能
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +32,8 @@ class RegistrationTest extends TestCase
      *
      * @return void
      */
-    public function test_name_is_required_for_registration(): void
+    /** @test */
+    public function 名前が入力されていない場合、バリデーションメッセージが表示される()
     {
         $this->get('/register')->assertStatus(200);
 
@@ -48,7 +49,8 @@ class RegistrationTest extends TestCase
      *
      * @return void
      */
-    public function test_email_is_required_for_registration(): void
+    /** @test */
+    public function メールアドレスが入力されていない場合、バリデーションメッセージが表示されることon()
     {
         $this->get('/register')->assertStatus(200);
 
@@ -58,13 +60,14 @@ class RegistrationTest extends TestCase
 
         $this->assertDatabaseCount('users', 0);
     }
-
+    // テストケース１
     /**
      * [ID 1] パスワードが入力されていない場合、バリデーションメッセージが表示されること
      *
      * @return void
      */
-    public function test_password_is_required_for_registration(): void
+    /** @test */
+    public function パスワードが入力されていない場合、バリデーションメッセージが表示されること()
     {
         $this->get('/register')->assertStatus(200);
 
@@ -83,7 +86,8 @@ class RegistrationTest extends TestCase
      *
      * @return void
      */
-    public function test_password_must_be_at_least_8_characters(): void
+    /** @test */
+    public function パスワードが7文字以下の場合、バリデーションメッセージが表示されること()
     {
         $this->get('/register')->assertStatus(200);
 
@@ -103,7 +107,8 @@ class RegistrationTest extends TestCase
      *
      * @return void
      */
-    public function test_password_must_match_confirmation(): void
+    /** @test */
+    public function パスワードが確認用パスワードと一致しない場合、バリデーションメッセージが表示されること()
     {
         $this->get('/register')->assertStatus(200);
 
@@ -122,7 +127,8 @@ class RegistrationTest extends TestCase
      *
      * @return void
      */
-    public function test_user_can_register_with_valid_data_and_is_redirected(): void
+    /** @test */
+    public function 全ての項目が入力されている場合、会員情報が登録され、プロフィール設定画面に遷移されること()
     {
         $this->get('/register')->assertStatus(200);
 
