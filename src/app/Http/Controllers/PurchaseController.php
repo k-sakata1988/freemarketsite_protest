@@ -131,7 +131,7 @@ class PurchaseController extends Controller
                 'return_url' => route('purchase.return', $item->id),
             ]);
 
-            $status = 'purchased';
+            $status = 'pending';
             $stripeId = $intent->id;
 
             $redirect = redirect()->away(
