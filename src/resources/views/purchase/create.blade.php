@@ -24,14 +24,14 @@
                 <hr>
 
                 <div class="payment-section">
-                    <h3>支払い方法</h3>
+                    <h1>支払い方法</h1>
                     <select name="payment_method_type" id="payment_method_type">
                         <option value="credit">クレジットカード</option>
                         <option value="convenience">コンビニ払い</option>
                     </select>
 
                     <div id="credit-card-details" class="mt-3">
-                        <h4 class="mb-2">カード情報</h4>
+                        <h2 class="mb-2">カード情報</h2>
 
                         <div id="card-element"></div>
 

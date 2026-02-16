@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container">
-    <h2>住所の変更</h2>
+    <h1>住所の変更</h1>
 
     <form method="POST" action="{{ route('user.address.save') }}">
         @csrf

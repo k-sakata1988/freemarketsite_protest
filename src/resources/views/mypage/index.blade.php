@@ -16,7 +16,7 @@
                     <div class="profile-placeholder">画像なし</div>
                 @endif
             </div>
-            <h2 class="user-name">{{ $user->name ?? 'ユーザー名' }}</h2>
+            <h1 class="user-name">{{ $user->name ?? 'ユーザー名' }}</h1>
         </div>
 
         <a href="{{ route('mypage.profile.edit') }}" class="profile-edit-link">
@@ -28,6 +28,12 @@
         <ul id="tab-menu">
             <li class="mypage-tab-item tab-item active" data-tab="sold">出品した商品</li>
             <li class="mypage-tab-item tab-item" data-tab="bought">購入した商品</li>
+            <li class="mypage-tab-item tab-item" data-tab="trading">
+                取引中の商品
+                @if(isset($unreadCount) && $unreadCount > 0)
+                <span class="notification-badge">{{ $unreadCount }}</span>
+                @endif
+            </li>
         </ul>
     </div>
 
@@ -70,6 +76,29 @@
             @endforelse
         </div>
     </div>
+
+    <div id="tab-trading" class="tab-content" style="display: none;">
+    <h3>取引中の商品</h3>
+
+    <div class="mypage-items-container">
+        @forelse ($tradingItems ?? [] as $item)
+            <a href="{{ route('chat.show', $item->id) }}" class="mypage-item-card-link">
+                <div class="mypage-item-card">
+                    <div class="mypage-item-image">
+                        <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
+                        @if($item->unread_count > 0)
+                            <span class="item-badge">{{ $item->unread_count }}</span>
+                        @endif
+                    </div>
+                    <p class="item-name">{{ $item->name }}</p>
+                </div>
+            </a>
+        @empty
+            <p class="no-items">取引中の商品はありません。</p>
+        @endforelse
+    </div>
+</div>
+
 </div>
 
 <script>

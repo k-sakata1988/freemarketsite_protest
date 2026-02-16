@@ -10,7 +10,7 @@
         @csrf
         @method('PUT')
 
-        <h2>プロフィール設定</h2>
+        <h1>プロフィール設定</h1>
 
         @if (session('success'))
             <div class="success-message">

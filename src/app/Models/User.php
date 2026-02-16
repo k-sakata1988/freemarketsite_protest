@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Cashier\Billable;
+use App\Models\Address;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -26,7 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Purchase::class);
     }
     public function address(){
-        return $this->hasOne(address::class);
+        return $this->hasOne(Address::class);
     }
     public function comments(){
         return $this->hasMany(Comments::class);

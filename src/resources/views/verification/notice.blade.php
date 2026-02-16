@@ -60,7 +60,7 @@
 
 @section('content')
 <div class="verification-container">
-    <h2>登録していただいたメールアドレスに認証メールを送信しました。</h2>
+    <h1>登録していただいたメールアドレスに認証メールを送信しました。</h1>
     <p>メール認証を完了してください。</p>
 
     <div class="certification-button">
