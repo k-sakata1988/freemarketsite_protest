@@ -24,13 +24,11 @@ class ItemController extends Controller
         if ($activeTab === 'mylist' && auth()->check()) {
             $items = Auth::user()->favorites()
                 ->with('purchase')
-                ->where('status', 'selling')
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();
         } else {
             $items = Item::recommended()
                 ->with('purchase')
-                ->where('status', 'selling')
                 ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();
@@ -46,7 +44,6 @@ class ItemController extends Controller
         if ($type === 'recommended' || !auth()->check()) {
             $items = Item::recommended()
                 ->with('purchase')
-                ->where('status', 'selling')
                 ->when(auth()->check(), fn($q) => $q->where('user_id', '<>', auth()->id()))
                 ->when($keyword, fn($q) => $q->where('name', 'LIKE', "%{$keyword}%"))
                 ->get();

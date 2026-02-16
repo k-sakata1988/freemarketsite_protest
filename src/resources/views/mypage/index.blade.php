@@ -38,13 +38,16 @@
     </div>
 
     <div id="tab-sold" class="tab-content active">
-        <h3>出品した商品</h3>
         <div class="mypage-items-container">
             @forelse ($soldItems ?? [] as $item)
             <a href="{{ route('items.show', ['item' => $item->id]) }}" class="mypage-item-card-link">
                 <div class="mypage-item-card">
                     <div class="mypage-item-image">
-                        <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
+                        @php
+                        $imagePath = $item->image_path;
+                        $isExternal = Str::startsWith($imagePath, ['http://', 'https://']);
+                        @endphp
+                        <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}" alt="{{ $item->name }}">
                     </div>
                     <p class="item-name">{{ $item->name }}</p>
                 </div>
@@ -56,7 +59,6 @@
     </div>
 
     <div id="tab-bought" class="tab-content" style="display: none;">
-        <h3>購入した商品</h3>
         <div class="mypage-items-container">
             @forelse ($boughtItems ?? [] as $item)
             <a href="{{ route('items.show', ['item' => $item->id]) }}" class="mypage-item-card-link">
@@ -78,26 +80,28 @@
     </div>
 
     <div id="tab-trading" class="tab-content" style="display: none;">
-    <h3>取引中の商品</h3>
-
-    <div class="mypage-items-container">
-        @forelse ($tradingItems ?? [] as $item)
-            <a href="{{ route('chat.show', $item->id) }}" class="mypage-item-card-link">
-                <div class="mypage-item-card">
-                    <div class="mypage-item-image">
-                        <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}">
-                        @if($item->unread_count > 0)
-                            <span class="item-badge">{{ $item->unread_count }}</span>
-                        @endif
+        <div class="mypage-items-container">
+            @forelse ($tradingItems ?? [] as $item)
+                <a href="{{ route('chat.show', $item->id) }}" class="mypage-item-card-link">
+                    <div class="mypage-item-card">
+                        <div class="mypage-item-image">
+                            @php
+                            $imagePath = $item->image_path;
+                            $isExternal = Str::startsWith($imagePath, ['http://', 'https://']);
+                            @endphp
+                            <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}" alt="{{ $item->name }}">
+                            @if($item->unread_count > 0)
+                                <span class="item-badge">{{ $item->unread_count }}</span>
+                            @endif
+                        </div>
+                        <p class="item-name">{{ $item->name }}</p>
                     </div>
-                    <p class="item-name">{{ $item->name }}</p>
-                </div>
-            </a>
-        @empty
-            <p class="no-items">取引中の商品はありません。</p>
-        @endforelse
+                </a>
+            @empty
+                <p class="no-items">取引中の商品はありません。</p>
+            @endforelse
+        </div>
     </div>
-</div>
 
 </div>
 

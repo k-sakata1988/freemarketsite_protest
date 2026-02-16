@@ -26,12 +26,13 @@ Route::put('/address', [AddressController::class, 'saveAddress'])->middleware('a
 Route::get('/purchase/address/{item}', [AddressController::class, 'update'])->middleware('auth')->name('address.update');
 Route::post('/purchase/{item}', [PurchaseController::class, 'store'])->middleware('auth')->name('purchase.store');
 Route::get('purchase/{item}/konbini/return', [PurchaseController::class, 'konbiniReturn'])->name('purchase.return');
-Route::middleware('auth')->post('/items/{item}/favorite', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
 Route::middleware('auth','verified')->group(function () {
     Route::get('/mypage', [UserController::class, 'index'])->name('mypage.index');
     Route::get('/mypage/profile_edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
     Route::put('/mypage/profile', [UserController::class, 'update'])->name('mypage.profile.update');
     Route::get('/mypage/items/{tabType}', [UserController::class, 'getTabItems'])->name('mypage.items.tab');
+    Route::get('/chat/{purchase}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{purchase}', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
 });
 Route::post('/logout', LogoutController::class)->name('logout');
 

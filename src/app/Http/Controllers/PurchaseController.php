@@ -77,6 +77,11 @@ class PurchaseController extends Controller
                 'status' => 'purchased',
                 'stripe_id' => 'pi_mock',
             ]);
+
+            $item->update([
+                'status' => 'sold'
+            ]);
+
             return redirect()->route('items.index')->with('success', '商品を購入しました！（テスト動作）');
         }
 
@@ -148,6 +153,10 @@ class PurchaseController extends Controller
                 'method' => $method, 
                 'status' => $status,
                 'stripe_id' => $stripeId,
+            ]);
+
+            $item->update([
+                'status' => 'sold'
             ]);
 
             return $redirect; 

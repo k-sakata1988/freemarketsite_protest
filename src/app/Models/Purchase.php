@@ -25,4 +25,9 @@ class Purchase extends Model
         return $this->belongsTo(Address::class);
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
 }

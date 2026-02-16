@@ -6,25 +6,83 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Address;
+use App\Models\Purchase;
+use App\Models\Message;
 
 class UserController extends Controller
 {
+    // public function index()
+    // {
+    //     $user = Auth::user();
+    //     $soldItems = $user->items()->latest()->get();
+    //     $boughtItems = $user->purchases()
+    //                     ->with('item')
+    //                     ->latest()
+    //                     ->get()
+    //                     ->map(function ($purchase) {
+    //                         return $purchase->item;
+    //                     })
+    //                     ->filter();
+
+    //     return view('mypage.index', compact('user', 'soldItems', 'boughtItems'));
+    // }
     public function index()
     {
         $user = Auth::user();
         $soldItems = $user->items()->latest()->get();
         $boughtItems = $user->purchases()
-                        ->with('item')
-                        ->latest()
-                        ->get()
-                        ->map(function ($purchase) {
-                            return $purchase->item;
-                        })
-                        ->filter();
+            ->with('item')
+            ->latest()
+            ->get()
+            ->map(function ($purchase) {
+                return $purchase->item;
+            })
+            ->filter();
 
-        return view('mypage.index', compact('user', 'soldItems', 'boughtItems'));
+        $buyerPurchases = $user->purchases()
+            ->where('status', 'purchased')
+            ->with(['item', 'messages'])
+            ->get();
+
+        $sellerPurchases = Purchase::where('status', 'purchased')
+            ->whereHas('item', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['item', 'messages'])
+            ->get();
+
+        $tradingPurchases = $buyerPurchases
+            ->merge($sellerPurchases)
+            ->unique('id');
+
+        $tradingItems = $tradingPurchases->map(function ($purchase) use ($user) {
+            $item = $purchase->item;
+            $item->unread_count = $purchase->messages()
+                ->where('receiver_id', $user->id)
+                ->whereNull('read_at')
+                ->count();
+
+            $item->latest_message_at = $purchase->messages()
+                ->latest()
+                ->value('created_at');
+                return $item;
+            })
+            ->sortByDesc('latest_message_at')
+            ->values();
+
+        $unreadCount = Message::where('receiver_id', $user->id)
+            ->whereNull('read_at')
+            ->count();
+
+        return view('mypage.index', compact(
+            'user',
+            'soldItems',
+            'boughtItems',
+            'tradingItems',
+            'unreadCount'
+        ));
     }
-    
+
     public function getTabItems(Request $request, $tabType)
     {
         $user = Auth::user();

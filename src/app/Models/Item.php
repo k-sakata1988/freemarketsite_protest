@@ -47,7 +47,7 @@ class Item extends Model
     }
     public function isSoldOut(): bool
     {
-        return $this->purchase()->exists();
+        return $this->status === 'sold';
     }
     public function getCategoryIdsAttribute(){
         return $this->category_id ? explode(',', $this->category_id) : [];
