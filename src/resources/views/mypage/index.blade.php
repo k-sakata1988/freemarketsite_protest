@@ -81,28 +81,35 @@
 
     <div id="tab-trading" class="tab-content" style="display: none;">
         <div class="mypage-items-container">
-            @forelse ($tradingItems ?? [] as $item)
-                <a href="{{ route('chat.show', $item->id) }}" class="mypage-item-card-link">
-                    <div class="mypage-item-card">
-                        <div class="mypage-item-image">
-                            @php
-                            $imagePath = $item->image_path;
-                            $isExternal = Str::startsWith($imagePath, ['http://', 'https://']);
-                            @endphp
-                            <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}" alt="{{ $item->name }}">
-                            @if($item->unread_count > 0)
-                                <span class="item-badge">{{ $item->unread_count }}</span>
-                            @endif
-                        </div>
-                        <p class="item-name">{{ $item->name }}</p>
+            @forelse ($tradingPurchases ?? [] as $purchase)
+            <a href="{{ route('chat.show', $purchase) }}" class="mypage-item-card-link">
+                <div class="mypage-item-card">
+                    <div class="mypage-item-image">
+                        @php
+                            $imagePath = $purchase->item->image_path ?? $purchase->item->image ?? null;
+                            $isExternal = $imagePath && \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']);
+                        @endphp
+
+                        @if($imagePath)
+                            <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}"alt="{{ $purchase->item->name }}">
+                        @endif
+                        @if($purchase->unread_count > 0)
+                            <span class="item-badge">
+                                {{ $purchase->unread_count }}
+                            </span>
+                        @endif
                     </div>
-                </a>
+
+                    <p class="item-name">
+                        {{ $purchase->item->name }}
+                    </p>
+                </div>
+            </a>
             @empty
                 <p class="no-items">取引中の商品はありません。</p>
             @endforelse
         </div>
     </div>
-
 </div>
 
 <script>

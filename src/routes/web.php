@@ -8,6 +8,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -31,8 +32,9 @@ Route::middleware('auth','verified')->group(function () {
     Route::get('/mypage/profile_edit', [UserController::class, 'edit'])->name('mypage.profile.edit');
     Route::put('/mypage/profile', [UserController::class, 'update'])->name('mypage.profile.update');
     Route::get('/mypage/items/{tabType}', [UserController::class, 'getTabItems'])->name('mypage.items.tab');
-    Route::get('/chat/{purchase}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{purchase}', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
+    Route::get('/chat/{purchase}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{purchase}', [ChatController::class, 'store'])->name('chat.store');
+    Route::post('/purchase/{purchase}/complete',[PurchaseController::class, 'complete'])->name('purchase.complete');
 });
 Route::post('/logout', LogoutController::class)->name('logout');
 

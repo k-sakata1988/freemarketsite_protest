@@ -23,7 +23,15 @@ class ChatController extends Controller
 
         $purchase->messages()->where('receiver_id', $user->id)->whereNull('read_at')->update(['read_at' => now()]);
 
-        return view('chat.show', compact('purchase', 'messages'));
+        $partner = $purchase->user_id === $user->id? $purchase->item->user: $purchase->user;
+
+        $tradingPurchases = Purchase::where(function($query) use ($user) {
+            $query->where('user_id', $user->id)->orWhereHas('item', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        })->where('id', '!=', $purchase->id)->with('item')->get();
+
+        return view('chat.show', compact('purchase', 'messages','partner','tradingPurchases'));
     }
 
 

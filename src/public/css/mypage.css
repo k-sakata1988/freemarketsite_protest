@@ -322,6 +322,42 @@
     width: 100%;
 }
 
+.mypage-tab-item {
+    position: relative;
+}
+
+.notification-badge {
+    display: inline-block;
+    background-color: red;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.mypage-item-image {
+    position: relative;
+}
+
+.item-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: red;
+    color: white;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 @media (min-width: 1540px) {
     .mypage-items-container {

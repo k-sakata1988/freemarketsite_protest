@@ -26,59 +26,38 @@ class UserController extends Controller
 
     //     return view('mypage.index', compact('user', 'soldItems', 'boughtItems'));
     // }
+
     public function index()
     {
         $user = Auth::user();
         $soldItems = $user->items()->latest()->get();
-        $boughtItems = $user->purchases()
-            ->with('item')
-            ->latest()
-            ->get()
-            ->map(function ($purchase) {
-                return $purchase->item;
-            })
-            ->filter();
 
-        $buyerPurchases = $user->purchases()
-            ->where('status', 'purchased')
-            ->with(['item', 'messages'])
-            ->get();
+        $boughtItems = $user->purchases()->with('item')->latest()->get()->map(function ($purchase) {
+            return $purchase->item;
+        })->filter();
 
-        $sellerPurchases = Purchase::where('status', 'purchased')
-            ->whereHas('item', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['item', 'messages'])
-            ->get();
+        $buyerPurchases = $user->purchases()->where('status', 'purchased')->with(['item', 'messages'])->get();
 
-        $tradingPurchases = $buyerPurchases
-            ->merge($sellerPurchases)
-            ->unique('id');
+        $sellerPurchases = Purchase::where('status', 'purchased')->whereHas('item', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->with(['item', 'messages'])->get();
 
-        $tradingItems = $tradingPurchases->map(function ($purchase) use ($user) {
-            $item = $purchase->item;
-            $item->unread_count = $purchase->messages()
-                ->where('receiver_id', $user->id)
-                ->whereNull('read_at')
-                ->count();
+        $tradingPurchases = $buyerPurchases->merge($sellerPurchases)->unique('id')->map(function ($purchase) use ($user) {
 
-            $item->latest_message_at = $purchase->messages()
-                ->latest()
-                ->value('created_at');
-                return $item;
-            })
-            ->sortByDesc('latest_message_at')
-            ->values();
+            $purchase->unread_count = $purchase->messages()->where('receiver_id', $user->id)->whereNull('read_at')->count();
 
-        $unreadCount = Message::where('receiver_id', $user->id)
-            ->whereNull('read_at')
-            ->count();
+            $purchase->latest_message_at = $purchase->messages()->latest()->value('created_at');
+
+            return $purchase;
+        })->sortByDesc('latest_message_at')->values();
+
+        $unreadCount = Message::where('receiver_id', $user->id)->whereNull('read_at')->count();
 
         return view('mypage.index', compact(
             'user',
             'soldItems',
             'boughtItems',
-            'tradingItems',
+            'tradingPurchases',
             'unreadCount'
         ));
     }

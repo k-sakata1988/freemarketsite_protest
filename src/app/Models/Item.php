@@ -56,4 +56,16 @@ class Item extends Model
     public function getCategoriesAttribute(){
         return Category::whereIn('id', $this->category_ids)->get();
     }
+
+    public function getImageUrlAttribute(){
+        if (!$this->image_path) {
+            return null;
+        }
+
+        if (str_starts_with($this->image_path, 'http')) {
+            return $this->image_path;
+        }
+
+        return asset('storage/' . $this->image_path);
+    }
 }
