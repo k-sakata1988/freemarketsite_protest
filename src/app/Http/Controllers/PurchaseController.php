@@ -168,6 +168,24 @@ class PurchaseController extends Controller
     public function konbiniReturn(Item $item)
     {
         return redirect()->route('items.index')->with('info', 'コンビニ決済の手続きが完了しました。コンビニでお支払い後、購入が確定します。');
+    }
+
+    public function complete(Request $request, Purchase $purchase)
+    {
+        if (auth()->id() !== $purchase->user_id) {
+            abort(403);
         }
 
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $purchase->update([
+            'status' => 'completed',
+            'buyer_rating' => $request->rating,
+            'completed_at' => now(),
+        ]);
+
+        return redirect()->route('items.index');
+    }
 }

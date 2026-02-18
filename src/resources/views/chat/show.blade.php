@@ -17,9 +17,7 @@
         @endforeach
     </div>
     <div class="chat-main">
-
         <div class="chat-header">
-
             <div class="chat-partner-info">
                 <div class="chat-partner-avatar">
                     @if($partner->profile_image)
@@ -28,21 +26,22 @@
                         <div class="avatar-placeholder"></div>
                     @endif
                 </div>
-
                 <h2 class="chat-title">
                     「{{ $partner->name }}」さんとの取引画面
                 </h2>
             </div>
 
-            @if(auth()->id() === $purchase->user_id)
-                <form method="POST" action="{{ route('purchase.complete', $purchase) }}">
-                    @csrf
-                    <button type="submit" class="complete-btn">
-                        取引を完了する
-                    </button>
-                </form>
+            @if(auth()->id() === $purchase->user_id && $purchase->status === 'purchased')
+                <button type="button" class="complete-btn" onclick="openRatingModal()">
+                    取引を完了する
+                </button>
+            @endif
+
+            @if($purchase->status === 'completed')
+            <p class="completed-label">この取引は完了しています</p>
             @endif
         </div>
+
         <div class="chat-item-info">
             <div class="chat-item-image">
                 @php
@@ -126,25 +125,52 @@
 
         </div>
 
-        <form action="{{ route('chat.store', $purchase) }}" method="POST" enctype="multipart/form-data"  class="chat-form">
+        <form action="{{ route('chat.store', $purchase) }}" method="POST" enctype="multipart/form-data" class="chat-form">
             @csrf
             @error('message')
             <p class="error-message">{{ $message }}</p>
             @enderror
+
             @error('image')
             <p class="error-message">{{ $message }}（画像を再選択してください）</p>
             @enderror
-            <input type="text" id="chat-message" name="message" value="{{ old('message') }}" placeholder="取引メッセージを記入してください" class="chat-input" >
-            <input type="file" name="image" id="image-input" accept="image/*" style="display:none;">
-            <button type="button" class="image-add-btn" onclick="document.getElementById('image-input').click();">
-                    画像を追加
+
+            <input type="text" id="chat-message" name="message" value="{{ old('message') }}" placeholder="取引メッセージを記入してください" class="chat-input" @if($purchase->status === 'completed') disabled @endif>
+
+            <input type="file" name="image" id="image-input" accept="image/*" style="display:none;" @if($purchase->status === 'completed') disabled @endif>
+            <button type="button" class="image-add-btn" onclick="document.getElementById('image-input').click();" @if($purchase->status === 'completed') disabled @endif>
+                画像を追加
             </button>
-            <button type="submit" class="chat-send-btn">
+
+            <button type="submit" class="chat-send-btn" @if($purchase->status === 'completed') disabled @endif>
                 <img src="{{ asset('images/send-icon.png') }}" alt="送信">
             </button>
         </form>
     </div>
+    <div id="ratingModal" class="rating-modal" style="display:none;">
+        <div class="rating-modal-content">
+            <div class="rating-header">
+                取引が完了しました。
+            </div>
+            <div class="rating-body">
+                今回の取引相手はどうでしたか？
+            </div>
+            <div class="star-rating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+            <div class="rating-footer">
+                <button class="rating-submit-btn">
+                    送信する
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
 <script>
     function toggleEdit(messageId) {
         const form = document.getElementById('edit-form-' + messageId);
@@ -155,6 +181,24 @@
             form.style.display = 'none';
         }
     }
+
+    function openRatingModal() {
+        document.getElementById('ratingModal').style.display = 'flex';
+    }
+
+    function closeRatingModal() {
+        document.getElementById('ratingModal').style.display = 'none';
+    }
+
+    function selectStar(value) {
+        document.getElementById('ratingValue').value = value;
+
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+            star.style.color = index < value ? '#f5c518' : '#ccc';
+        });
+    }
+
 
     document.addEventListener("DOMContentLoaded", function () {
         const input = document.getElementById("chat-message");

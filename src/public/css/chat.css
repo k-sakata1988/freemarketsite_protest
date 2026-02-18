@@ -302,6 +302,97 @@
     margin: 4px 0;
 }
 
+.rating-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.rating-modal-content {
+    background: #f3f1df;
+    width: 520px;
+    border-radius: 20px;
+    border: 2px solid #000;
+    /* ← 枠線追加 */
+    overflow: hidden;
+    /* ← 区切り線用 */
+}
+
+.rating-header {
+    padding: 25px;
+    font-size: 26px;
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1px solid #000;
+    /* ← 区切り線 */
+}
+
+.rating-body {
+    padding: 25px;
+    font-size: 18px;
+    color: #777;
+    text-align: left;
+}
+
+.star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 0 30px;
+    border-bottom: 1px solid #000;
+}
+
+.star {
+    font-size: 55px;
+    cursor: pointer;
+    color: #d9d9d9;
+    transition: 0.2s;
+}
+
+.star.active {
+    color: #ffe234;
+}
+
+.rating-footer {
+    padding: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.rating-submit-btn {
+    background: #f26b6b;
+    color: #fff;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.rating-submit-btn:hover {
+    opacity: 0.9;
+}
+
+.star {
+    font-size: 55px;
+    cursor: pointer;
+    color: #d9d9d9;
+    transition: 0.2s;
+}
+
+.star:hover,
+.star.hover {
+    color: #ffe234;
+}
+
+.star.active {
+    color: #ffe234;
+}
+
 @media screen and (min-width: 1400px) and (max-width: 1540px) {
     .chat-sidebar {
         width: 300px;
