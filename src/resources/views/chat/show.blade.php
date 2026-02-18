@@ -8,7 +8,7 @@
 <div class="chat-wrapper">
 
     <div class="chat-sidebar">
-        <h3 class="sidebar-title">その他の取引</h3>
+        <h1  class="sidebar-title">その他の取引</h1>
 
         @foreach($tradingPurchases as $trading)
             <a href="{{ route('chat.show', $trading) }}" class="sidebar-item">
@@ -44,7 +44,6 @@
             @endif
         </div>
         <div class="chat-item-info">
-
             <div class="chat-item-image">
                 @php
                     $imagePath = $purchase->item->image_path ?? $purchase->item->image ?? null;
@@ -65,24 +64,20 @@
 
         </div>
         <div class="chat-messages">
-
             @forelse($messages as $message)
-
             <div class="message-row {{ $message->sender_id === auth()->id() ? 'my-message' : 'other-message' }}">
-
-                @if($message->sender_id !== auth()->id())
-                    <div class="message-avatar">
-                        @if($message->sender->profile_image)
+                <div class="message-block">
+                    <div class="message-header">
+                        <div class="message-avatar">
+                            @if($message->sender->profile_image)
                             <img src="{{ Storage::url($message->sender->profile_image) }}">
-                        @else
+                            @else
                             <div class="avatar-placeholder"></div>
-                        @endif
-                    </div>
-                @endif
-
-                <div class="message-content">
-                    <div class="message-username">
-                        {{ $message->sender->name }}
+                            @endif
+                        </div>
+                        <div class="message-username">
+                            {{ $message->sender->name }}
+                        </div>
                     </div>
                     <div class="message-bubble">
                         {{ $message->message }}
@@ -97,7 +92,6 @@
                             <button type="button" class="edit-toggle-btn" onclick="toggleEdit({{ $message->id }})">
                                 編集
                             </button>
-
                             <form action="{{ route('messages.destroy', $message) }}" method="POST" onsubmit="return confirm('削除しますか？');">
                                 @csrf
                                 @method('DELETE')
@@ -108,23 +102,12 @@
                         <form action="{{ route('messages.update', $message) }}" method="POST" class="edit-form" id="edit-form-{{ $message->id }}" style="display:none;">
                             @csrf
                             @method('PUT')
-                            <input type="text" name="message" value="{{ $message->message }}" class="edit-input" required>
+                            <input type="text" name="message" value="{{ $message->message }}" class="edit-input" >
                             <button type="submit" class="edit-btn">更新</button>
                         </form>
                         @endif
                     </div>
-
                 </div>
-                @if($message->sender_id === auth()->id())
-                    <div class="message-avatar">
-                        @if($message->sender->profile_image)
-                            <img src="{{ Storage::url($message->sender->profile_image) }}">
-                        @else
-                            <div class="avatar-placeholder"></div>
-                        @endif
-                    </div>
-                @endif
-
             </div>
 
             @empty
@@ -132,11 +115,15 @@
             @endforelse
 
         </div>
-        <form action="{{ route('chat.store', $purchase) }}" method="POST"  class="chat-form">
+        <form action="{{ route('chat.store', $purchase) }}" method="POST" enctype="multipart/form-data"  class="chat-form">
             @csrf
-            <input type="text" name="message" placeholder="取引メッセージを記入してください" class="chat-input" required>
+            <input type="text" name="message" placeholder="取引メッセージを記入してください" class="chat-input" >
+            <input type="file" name="image" id="image-input" accept="image/*" style="display:none;">
+            <button type="button" class="image-add-btn" onclick="document.getElementById('image-input').click();">
+                    画像を追加
+            </button>
             <button type="submit" class="chat-send-btn">
-                送信
+                <img src="{{ asset('images/send-icon.png') }}" alt="送信">
             </button>
         </form>
     </div>
