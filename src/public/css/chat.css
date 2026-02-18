@@ -141,9 +141,17 @@
 }
 
 .message-block {
-    max-width: 60%;
+    max-width: 70%;
     display: flex;
     flex-direction: column;
+}
+
+.message-image img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 12px;
+    margin-top: 5px;
+    display: block;
 }
 
 .message-header {
@@ -274,6 +282,24 @@
 .image-add-btn:hover {
     background: #ff0000;
     color: #fff;
+}
+
+.message-text {
+    margin-bottom: 8px;
+}
+
+.my-message .message-image img {
+    border: 2px solid #999;
+}
+
+.chat-error {
+    margin-bottom: 10px;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin: 4px 0;
 }
 
 @media screen and (min-width: 1400px) and (max-width: 1540px) {

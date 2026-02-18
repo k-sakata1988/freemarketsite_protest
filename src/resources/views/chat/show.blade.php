@@ -80,8 +80,18 @@
                         </div>
                     </div>
                     <div class="message-bubble">
-                        {{ $message->message }}
+                        @if($message->message)
+                        <div class="message-text">
+                            {{ $message->message }}
+                        </div>
+                        @endif
+                        @if($message->image_path)
+                        <div class="message-image">
+                            <img src="{{ Storage::url($message->image_path) }}" alt="chat image">
+                        </div>
+                        @endif
                     </div>
+
                     <div class="message-footer">
                         <div class="message-time">
                             {{ $message->created_at->format('m/d H:i') }}
@@ -115,9 +125,16 @@
             @endforelse
 
         </div>
+
         <form action="{{ route('chat.store', $purchase) }}" method="POST" enctype="multipart/form-data"  class="chat-form">
             @csrf
-            <input type="text" name="message" placeholder="取引メッセージを記入してください" class="chat-input" >
+            @error('message')
+            <p class="error-message">{{ $message }}</p>
+            @enderror
+            @error('image')
+            <p class="error-message">{{ $message }}（画像を再選択してください）</p>
+            @enderror
+            <input type="text" id="chat-message" name="message" value="{{ old('message') }}" placeholder="取引メッセージを記入してください" class="chat-input" >
             <input type="file" name="image" id="image-input" accept="image/*" style="display:none;">
             <button type="button" class="image-add-btn" onclick="document.getElementById('image-input').click();">
                     画像を追加
@@ -138,5 +155,24 @@
             form.style.display = 'none';
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.getElementById("chat-message");
+
+        const storageKey = "chat_draft_{{ $purchase->id }}";
+
+        const savedDraft = localStorage.getItem(storageKey);
+        if (savedDraft && !input.value) {
+            input.value = savedDraft;
+        }
+
+        input.addEventListener("input", function () {
+            localStorage.setItem(storageKey, input.value);
+        });
+
+        input.form.addEventListener("submit", function () {
+            localStorage.removeItem(storageKey);
+        });
+    });
 </script>
 @endsection
