@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileRequest;
 use Illuminate\Support\Facades\Storage;
@@ -11,22 +12,6 @@ use App\Models\Message;
 
 class UserController extends Controller
 {
-    // public function index()
-    // {
-    //     $user = Auth::user();
-    //     $soldItems = $user->items()->latest()->get();
-    //     $boughtItems = $user->purchases()
-    //                     ->with('item')
-    //                     ->latest()
-    //                     ->get()
-    //                     ->map(function ($purchase) {
-    //                         return $purchase->item;
-    //                     })
-    //                     ->filter();
-
-    //     return view('mypage.index', compact('user', 'soldItems', 'boughtItems'));
-    // }
-
     public function index()
     {
         $user = Auth::user();
@@ -37,28 +22,41 @@ class UserController extends Controller
         })->filter();
 
         $buyerPurchases = $user->purchases()->where('status', 'purchased')->with(['item', 'messages'])->get();
+        $sellerPurchases = Purchase::where('status', 'purchased')
+            ->whereHas('item', fn($q) => $q->where('user_id', $user->id))
+            ->with(['item', 'messages'])
+            ->get();
 
-        $sellerPurchases = Purchase::where('status', 'purchased')->whereHas('item', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->with(['item', 'messages'])->get();
-
-        $tradingPurchases = $buyerPurchases->merge($sellerPurchases)->unique('id')->map(function ($purchase) use ($user) {
-
-            $purchase->unread_count = $purchase->messages()->where('receiver_id', $user->id)->whereNull('read_at')->count();
-
-            $purchase->latest_message_at = $purchase->messages()->latest()->value('created_at');
-
-            return $purchase;
-        })->sortByDesc('latest_message_at')->values();
+        $tradingPurchases = $buyerPurchases->merge($sellerPurchases)
+            ->unique('id')
+            ->map(function ($purchase) use ($user) {
+                $purchase->unread_count = $purchase->messages()->where('receiver_id', $user->id)->whereNull('read_at')->count();
+                $purchase->latest_message_at = $purchase->messages()->latest()->value('created_at');
+                return $purchase;
+            })
+            ->sortByDesc('latest_message_at')
+            ->values();
 
         $unreadCount = Message::where('receiver_id', $user->id)->whereNull('read_at')->count();
+
+        // 平均評価の計算
+        $ratings = Purchase::where('status', 'completed')
+            ->where(function($q) use ($user) {
+                $q->whereHas('item', fn($q2) => $q2->where('user_id', $user->id)) // 出品者としての評価
+                  ->orWhere('user_id', $user->id); // 購入者としての評価
+            })
+            ->pluck('buyer_rating', 'seller_rating') // 必要に応じてカラム名調整
+            ->filter();
+
+        $averageRating = $ratings->count() > 0 ? round($ratings->average()) : null;
 
         return view('mypage.index', compact(
             'user',
             'soldItems',
             'boughtItems',
             'tradingPurchases',
-            'unreadCount'
+            'unreadCount',
+            'averageRating'
         ));
     }
 
@@ -70,9 +68,7 @@ class UserController extends Controller
         if ($tabType === 'sold') {
             $items = $user->items()->latest()->get();
         } elseif ($tabType === 'bought') {
-            $items = $user->purchases()->with('item')->latest()->get()->map(function ($purchase){
-                return $purchase->item;
-            })->filter();
+            $items = $user->purchases()->with('item')->latest()->get()->map(fn($purchase) => $purchase->item)->filter();
         }
 
         return view('mypage._item_list', ['items' => $items, 'tabType' => $tabType])->render();
@@ -105,7 +101,6 @@ class UserController extends Controller
             }
 
             $path = $request->file('profile_image')->store('profile_images', 'public');
-
             $userData['profile_image'] = $path;
         }
 

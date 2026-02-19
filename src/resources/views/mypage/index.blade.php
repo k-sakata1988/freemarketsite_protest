@@ -2,6 +2,11 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/mypage.css') }}">
+<style>
+    .user-rating { margin-top: 8px; font-size: 14px; }
+    .user-rating .star { color: #ccc; font-size: 16px; }
+    .user-rating .star.filled { color: #f39c12; } /* 黄色 */
+</style>
 @endsection
 
 @section('content')
@@ -17,6 +22,17 @@
                 @endif
             </div>
             <h1 class="user-name">{{ $user->name ?? 'ユーザー名' }}</h1>
+
+            @if(isset($averageRating) && $averageRating !== null)
+                <div class="user-rating">
+                    平均評価: {{ $averageRating }} / 5
+                    @for($i = 1; $i <= 5; $i++)
+                        <span class="star {{ $i <= $averageRating ? 'filled' : '' }}">★</span>
+                    @endfor
+                </div>
+            @else
+                <div class="user-rating">まだ評価はありません</div>
+            @endif
         </div>
 
         <a href="{{ route('mypage.profile.edit') }}" class="profile-edit-link">
@@ -89,9 +105,8 @@
                             $imagePath = $purchase->item->image_path ?? $purchase->item->image ?? null;
                             $isExternal = $imagePath && \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']);
                         @endphp
-
                         @if($imagePath)
-                            <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}"alt="{{ $purchase->item->name }}">
+                            <img src="{{ $isExternal ? $imagePath : asset('storage/' . $imagePath) }}" alt="{{ $purchase->item->name }}">
                         @endif
                         @if($purchase->unread_count > 0)
                             <span class="item-badge">
@@ -100,9 +115,7 @@
                         @endif
                     </div>
 
-                    <p class="item-name">
-                        {{ $purchase->item->name }}
-                    </p>
+                    <p class="item-name">{{ $purchase->item->name }}</p>
                 </div>
             </a>
             @empty

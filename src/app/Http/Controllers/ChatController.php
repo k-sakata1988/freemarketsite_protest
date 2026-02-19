@@ -12,19 +12,18 @@ class ChatController extends Controller
 {
     public function show(Purchase $purchase)
     {
+        $purchase->refresh();
         $user = Auth::user();
-        if (
-            $purchase->user_id !== $user->id &&
-            $purchase->item->user_id !== $user->id
-            ) {
-                abort(403);
-            }
+
+        if ($purchase->user_id !== $user->id && $purchase->item->user_id !== $user->id) {
+            abort(403);
+        }
 
         $messages = $purchase->messages()->with('sender')->orderBy('created_at')->get();
 
-        $purchase->messages()->where('receiver_id', $user->id)->whereNull('read_at')->update(['read_at' => now()]);
+        $purchase->messages() ->where('receiver_id', $user->id) ->whereNull('read_at') ->update(['read_at' => now()]);
 
-        $partner = $purchase->user_id === $user->id? $purchase->item->user: $purchase->user;
+        $partner = $purchase->user_id === $user->id ? $purchase->item->user : $purchase->user;
 
         $tradingPurchases = Purchase::where(function($query) use ($user) {
             $query->where('user_id', $user->id)->orWhereHas('item', function($q) use ($user) {
@@ -32,9 +31,33 @@ class ChatController extends Controller
             });
         })->where('id', '!=', $purchase->id)->with('item')->get();
 
-        return view('chat.show', compact('purchase', 'messages','partner','tradingPurchases'));
-    }
+        $userId = $user->id;
 
+        $showRatingModal = false;
+        $ratingTarget = null;
+
+        if ($purchase->buyer_completed_at) {
+            if ($purchase->user_id === $userId && is_null($purchase->buyer_rating)) {
+                $showRatingModal = true;
+                $ratingTarget = 'seller';
+            } elseif ($purchase->item->user_id === $userId && is_null($purchase->seller_rating)) {
+                $showRatingModal = true;
+                $ratingTarget = 'buyer';
+            }
+        }
+
+        $showCompleteButton = ($purchase->user_id === $userId) && ($purchase->status === 'purchased') && (is_null($purchase->buyer_rating));
+
+        return view('chat.show', compact(
+            'purchase',
+            'messages',
+            'partner',
+            'tradingPurchases',
+            'showRatingModal',
+            'ratingTarget',
+            'showCompleteButton'
+        ));
+    }
 
     public function store(StoreChatMessageRequest $request, Purchase $purchase)
     {

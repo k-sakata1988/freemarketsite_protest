@@ -172,20 +172,40 @@ class PurchaseController extends Controller
 
     public function complete(Request $request, Purchase $purchase)
     {
-        if (auth()->id() !== $purchase->user_id) {
-            abort(403);
-        }
+        $userId = auth()->id();
 
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
+            'rating_for' => 'required|string|in:buyer,seller',
         ]);
 
-        $purchase->update([
-            'status' => 'completed',
-            'buyer_rating' => $request->rating,
-            'completed_at' => now(),
-        ]);
+        if ($request->rating_for === 'seller') {
+            if ($purchase->user_id !== $userId) abort(403);
+            $purchase->buyer_rating = $request->rating;
+        } else {
+            if ($purchase->item->user_id !== $userId) abort(403);
+            $purchase->seller_rating = $request->rating;
+        }
 
-        return redirect()->route('items.index');
+        if (!is_null($purchase->buyer_rating) && !is_null($purchase->seller_rating)) {
+            $purchase->status = 'completed';
+            $purchase->completed_at = now();
+        }
+
+        $purchase->save();
+
+        return redirect()->route('items.index')->with('success', '評価を送信しました');
+    }
+
+    public function markComplete(Purchase $purchase)
+    {
+        if ($purchase->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $purchase->buyer_completed_at = now();
+        $purchase->save();
+
+        return back();
     }
 }
