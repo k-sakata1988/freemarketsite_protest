@@ -39,16 +39,15 @@ class UserController extends Controller
 
         $unreadCount = Message::where('receiver_id', $user->id)->whereNull('read_at')->count();
 
-        // 平均評価の計算
-        $ratings = Purchase::where('status', 'completed')
-            ->where(function($q) use ($user) {
-                $q->whereHas('item', fn($q2) => $q2->where('user_id', $user->id)) // 出品者としての評価
-                  ->orWhere('user_id', $user->id); // 購入者としての評価
-            })
-            ->pluck('buyer_rating', 'seller_rating') // 必要に応じてカラム名調整
-            ->filter();
+        $sellerRatings = Purchase::where('status', 'completed')->whereHas('item', fn($q) => $q->where('user_id', $user->id))->pluck('buyer_rating');
 
-        $averageRating = $ratings->count() > 0 ? round($ratings->average()) : null;
+        $buyerRatings = Purchase::where('status', 'completed')->where('user_id', $user->id)->pluck('seller_rating');
+
+        $ratings = $sellerRatings->merge($buyerRatings)->filter();
+
+
+        $averageRating = $ratings->count() > 0 ? round($ratings->average()): null;
+
 
         return view('mypage.index', compact(
             'user',
