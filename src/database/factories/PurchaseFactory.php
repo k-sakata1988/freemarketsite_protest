@@ -23,4 +23,19 @@ class PurchaseFactory extends Factory
             // 'total' => $this->faker->numberBetween(100, 10000),
         ];
     }
+
+
+    public function purchased()
+    {
+        return $this->state(fn () => [
+            'status' => 'purchased',
+        ]);
+    }
+
+    public function completed()
+    {
+        return $this->state(fn () => [
+            'status' => 'completed',
+        ]);
+    }
 }
