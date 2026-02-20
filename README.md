@@ -28,6 +28,11 @@ Laravel環境構築
 ## ER図
 ![ER図](./er.drawio.png)
 
+## ユーザー情報
+- id:user1@example.com / pass:password
+- id:user2@example.com / pass:password
+- id:user3@example.com / pass:password
+
 ## URL
 - 開発環境: http://localhost/
 - phpMyAdmin: http://localhost:8080/

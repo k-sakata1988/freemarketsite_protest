@@ -12,6 +12,9 @@ use App\Models\Purchase;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TransactionCompletedMail;
+
 class PurchaseController extends Controller
 {
     /**
@@ -182,6 +185,9 @@ class PurchaseController extends Controller
         if ($request->rating_for === 'seller') {
             if ($purchase->user_id !== $userId) abort(403);
             $purchase->buyer_rating = $request->rating;
+            $seller = $purchase->item->user;
+            Mail::to($seller->email)
+                ->send(new TransactionCompletedMail($purchase));
         } else {
             if ($purchase->item->user_id !== $userId) abort(403);
             $purchase->seller_rating = $request->rating;

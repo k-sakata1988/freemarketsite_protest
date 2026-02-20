@@ -38,7 +38,6 @@ class ItemsTableSeeder extends Seeder
             ]);
         }
 
-
         $itemsdata = [
             [
                 'name'=>'腕時計',
@@ -141,10 +140,18 @@ class ItemsTableSeeder extends Seeder
                 'updated_at'=>Carbon::now(),
             ],
         ];
+
+        $user1 = $users[0];
+        $user2 = $users[1];
         foreach ($itemsdata as $index => $item) {
-            $user = $users[$index % $users->count()];
+            if ($index < 5) {
+                $userId = $user1->id;
+            } else {
+                $userId = $user2->id;
+            }
+
             DB::table('items')->insert([
-                'user_id' => $user->id,
+                'user_id' => $userId,
                 'name' => $item['name'],
                 'price' => $item['price'],
                 'brand' => $item['brand'],
