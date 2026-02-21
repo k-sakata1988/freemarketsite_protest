@@ -19,7 +19,7 @@
             <div class="profile-text">
                 <h1 class="user-name">{{ $user->name ?? 'ユーザー名' }}</h1>
                 @if(isset($averageRating) && $averageRating !== null)
-                    <div class="user-rating">
+                    <div class="user-rating" aria-label="平均評価 {{ $averageRating }}>
                         @for($i = 1; $i <= 5; $i++)
                             <span class="star {{ $i <= $averageRating ? 'filled' : '' }}">★</span>
                         @endfor

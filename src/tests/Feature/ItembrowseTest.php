@@ -73,7 +73,7 @@ class ItembrowseTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->get(route('items.tab', ['type' => 'recommended']));
-        $response->assertDontSee($myItem->name);
-        $response->assertSee($otherItem->name);
+        $response->assertDontSeeText($myItem->name);
+        $response->assertSeeText($otherItem->name);
     }
 }

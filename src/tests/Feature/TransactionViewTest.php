@@ -56,7 +56,7 @@ class TransactionViewTest extends TestCase
         $response = $this->actingAs($user)
             ->get(route('mypage.index'));
 
-        $response->assertDontSee($item->name);
+        $response->assertDontSeeText($item->name);
     }
 
     /** @test */
