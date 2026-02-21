@@ -15,6 +15,7 @@ Laravel環境構築
 6. .envにstripe_key,stripe_secretを設定し.envから.env.testingを作成しAPP_ENV=の項目にtesting(テスト用)を設定する
 7. php artisan migrate
 8. php artisan db:seed
+※errorが発生する場合はphp artisan migrate:fresh --seedを実行
 9. php artisan storage:link
 
 
